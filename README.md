@@ -104,3 +104,37 @@ Notice that when player reaches its destination, it goes back and forth because 
 To fix this, in Player update, only when distance is more than speedModifier, then you move the player(speedX and speedY assignments in update)
 Else, set speedX and Y to 0
 Now, your circle should stop 'vibrating' when it reaches its destination
+Now, create a new class called Obstacle
+Pass in game reference and convert it to class property
+Inside Obstacle, add collisionX property and give it a random number between 0 and game's width
+Do the same for collisionY but with game's height
+Set collisionRadius to 60
+Add draw method inside Obstacle, passing in context reference
+In the draw method for Player, copy from the first beginPath method till stroke and paste it in Obstacle draw
+The code will work because we have already added the necessary collisionX, Y, and radius properties in Obstacle class
+Obstacle class will be a blueprint for whenever we create an obstacle in the game
+Inside Game, add an obstacles array and a numberOfObstacles property set to 5 for now
+Create init(short for initialize) custom method in Game, and create a for loop
+The for loop will start at 0 index, with the limit being the numberOfObstacles property and incrementing
+Whenever the for loop runs, push a new instance of Obstacle into obstacles array
+Obstacle class requires a game reference, and since init method is inside Game class, just pass this keyword to the new instance of Obstacle
+Now, call init method on game and console log game
+Check your game properties and there are any undefined values, fix it in your code because there shouldn't be any
+To draw all the obstacles object on canvas, in render method for Game, use forEach method on obstacles array(because all new instances of Obstacle is placed inside the array)
+For each obstacle, call the draw method on it with the relevant reference required
+You should now have 5 circle obstacles inside your canvas as defined by your Obstacle collisionX and Y
+Each refresh will place the 5 obstacles randomly on the canvas
+Currently, the code inside your init method randomly generates 5 obstacles, and will overlap
+Remove the code and we will try a brute force method to try to place the obstacles(circles) in a non-overlapping fashion
+Create variable attempts and set it to 0 in init
+Create a while loop and increment attempts whenever the length of obstacles array is less than the numberOfObstacles AND attempts is less than 500
+Inside the while loop, add a testObstacle variable and assign it a new instance of OBstacle with the reference and console log it
+You should see 500 testObstacle objects in your console
+Remove the console log and replace it with a forEach method on obstacles array and for each obstacle, set distanceX as the difference between testObstacle's collisionX and obstacle's collisionX, and do the same for distanceY with collisionY
+This will compare the center points of the two objects testObstacle and obstacle, connecting the line between them, forming a hypotenuse using distanceX and distanceY
+Next, set distance to built in hypot method for Math(or if you are big brained, calculate using pythagoras theorem manually), passing distanceY and distanceX
+After that, set sumOfRadii to be the collisionRadius of testObstacle plus collisionRadius of obstacle
+Create a variable called overlap and set it to false outside the forEach method
+Back to the forEach method, set a condition for whenever distance is less than sumOfRadii, set overlap to true
+After the forEach method but still inside the while loop, set another condition where if overlap is false, then you push testObstacle into obstacles array
+This should ensure that your obstacles will never overlap/collide because those that are overlapping will be discarded by the code

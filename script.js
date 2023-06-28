@@ -58,11 +58,37 @@ window.addEventListener("load", function () {
     }
   }
 
+  class Obstacle {
+    constructor(game) {
+      this.game = game;
+      this.collisionX = Math.random() * this.game.width;
+      this.collisionY = Math.random() * this.game.height;
+      this.collisionRadius = 60;
+    }
+    draw(context) {
+      context.beginPath();
+      context.arc(
+        this.collisionX,
+        this.collisionY,
+        this.collisionRadius,
+        0,
+        Math.PI * 2
+      );
+      context.save();
+      context.globalAlpha = 0.5;
+      context.fill();
+      context.restore();
+      context.stroke();
+    }
+  }
+
   class Game {
     constructor(canvas) {
       this.canvas = canvas;
       this.width = this.canvas.width;
       this.height = this.canvas.height;
+      this.numberOfObstacles = 5;
+      this.obstacles = [];
       this.player = new Player(this);
       this.mouse = {
         x: this.width * 0.5,
@@ -94,10 +120,34 @@ window.addEventListener("load", function () {
     render(context) {
       this.player.draw(context);
       this.player.update();
+      this.obstacles.forEach((obstacle) => obstacle.draw(context));
+    }
+    init() {
+      let attempts = 0;
+      while (this.obstacles.length < this.numberOfObstacles && attempts < 500) {
+        let testObstacle = new Obstacle(this);
+        let overlap = false;
+        this.obstacles.forEach((obstacle) => {
+          const distanceX = testObstacle.collisionX - obstacle.collisionX;
+          const distanceY = testObstacle.collisionY - obstacle.collisionY;
+          const distance = Math.hypot(distanceY, distanceX);
+          const sumOfRadii =
+            testObstacle.collisionRadius + obstacle.collisionRadius;
+          if (distance < sumOfRadii) {
+            overlap = true;
+          }
+        });
+        if (!overlap) {
+          this.obstacles.push(testObstacle);
+        }
+        attempts++;
+      }
     }
   }
 
   const game = new Game(canvas);
+  game.init();
+  console.log(game);
 
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
