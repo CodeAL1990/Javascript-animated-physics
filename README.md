@@ -138,3 +138,49 @@ Create a variable called overlap and set it to false outside the forEach method
 Back to the forEach method, set a condition for whenever distance is less than sumOfRadii, set overlap to true
 After the forEach method but still inside the while loop, set another condition where if overlap is false, then you push testObstacle into obstacles array
 This should ensure that your obstacles will never overlap/collide because those that are overlapping will be discarded by the code
+Now, instead of circles, we will replacing the randomised circles with image sprites for obstacles
+In html, bring in obstacles.png in as an img tag, and set its id
+Inside css, set display to none for obstalces(we will draw it using canvas and javascript)
+In Obstacle, add image property, assigning it by linking to the obstacles id
+Set numberOfObstacles to 1 for now
+Inside Obstacle draw, call drawImage on its reference with 3 parameters/arguments for now(image, collisionX, collisionY)
+We will now add the dimensions of the individual sprites as properties
+Set spriteWidth to 250(1000 / 4)
+Set spriteHeight to 250(750 / 3)
+Set width to spriteWidth and height to spriteHeight(these will be used for scaling the images if needed later)
+Adding the 4th and 5th arguments to drawImage, using width and height properties for now, will squeeze the entire spritesheet into the dimensions defined by those arguments(which is 250px each)
+To crop a single sprite image from the spritesheet, you will need to employ all 9 arguments in drawImage method
+The remaining arguments are the source coordinates(sx, sy) and dimensions(sw, sh)which are placed after the image argument, and will decide where in the spritesheet you are cropping and the size you are cropping
+To crop the first sprite, it will be at coordinate 0,0 at the top left
+The dimensions will be the spriteWidth and spriteHeight which you have defined in the constructor
+In your game, the circle attached to your sprite is the collision area for your sprite and we want it to be around the centerpoint of your sprite
+To do this we can add a couple of helper properties in Obstacle, spriteX and spriteY
+Set spriteX to be the difference between collisionX and half of width
+For dx in Obstacle draw, replace it with spriteX
+Visually, you should see the collision circle pushed horizontally to the middle of the sprite
+Do the same for spriteY and dy
+Looking at the sprite, we want the collision area to be somewhere on the ground near the base of the sprite because there will be where our player sprite is moving and colliding
+To move the circle downwards, we want to tweak the values with regards to its y axis, which in this case is spriteY
+Positive values move the y axis upwards, and negative values down
+So, add negative values to spriteY till you are satisfied to where the collision area covers the base of the sprite
+Now, increase numberOfObstacles to 10
+To space your obstacles even more we can add a distanceBuffer variable to Game init method and give it a value
+In sumOfRadii, you can add distanceBuffer to its original assignment and the obstacles spawned in your game will always have this increased distanceBuffer you have added
+To make sure that the obstacles/sprites always appear fully on the canvas and not clipped at the edges of the canvas, you can add an AND operator in your condition after the init while loop, and check if testObstacle's spriteX is more than 0(left edge of canvas), AND if testOBstacle's spriteX is less than the total width minus testObstacle width(right edge of canvas)
+You should see that your obstacles are always visible horizontally after the above
+The conditions for spriteY will differ because there is the background to consider
+You do not want the obstacles to appear on the background which the player will not be able to walk pass anyway
+Set topMargin to 260 in Game(which is the approximate height of the background forest at the top side)
+Add the conditions for spriteY(vertically) with AND, taking the new topMargin property in consideration
+Between the while loop and the condition, add a margin variable, assigning two times testObstacle's collisionRadius
+Add this margin to the conditions for collisionY
+This will give ample space around the obstacles when they are generated so enemy NPCs and player can move about(which will be useful when we add them in)
+\*\* My topMargin's value is much smaller than author's (he uses 260 i use 20) because if i use his value my sprites are generated near the bottom side and never further upwards
+Currently, we are only cropping the first sprite from the spritesheet(0,0)
+For sx and sy, if we multiply 0 with spriteWidth and spriteHeight respectively, changing the 0 from 0 to 3 for sx will move the cropped position from position 0(first sprite) to position 3(4th sprite) horizontally in the spritesheet
+The same applies to sy but vertically
+As such, we can add helper properties instead of using hardcoded 0 and what not in place of these hardcoded position values
+Add frameX property and give it a random value between 0 and 4(using Math.floor on Math.random)
+Do the same for frameY, giving it a random value between 0 and 3
+In your drawImage method, you can now replace your hardcoded values in sx and sy, with frameX and frameY, multiplied by their appropriate x or y dimension
+Now, you should get obstacles that are randomly generated defined by your spritesheet
