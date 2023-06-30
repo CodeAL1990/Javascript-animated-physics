@@ -184,3 +184,36 @@ Add frameX property and give it a random value between 0 and 4(using Math.floor 
 Do the same for frameY, giving it a random value between 0 and 3
 In your drawImage method, you can now replace your hardcoded values in sx and sy, with frameX and frameY, multiplied by their appropriate x or y dimension
 Now, you should get obstacles that are randomly generated defined by your spritesheet
+Inside your Game class, create checkCollision custom method, passing in a and b references
+The idea here is to check for collision between a and b objects and can be applied to every object that has collision
+In checkCollision, set distanceX to be the difference between collisionX of a and collisionX of b(this code will only work when all class objects have the referenced property)
+Set distanceY to be the difference between collisionY of a and of b
+Set distance to be Math.hypot of dy and dx
+Set sumOfRadii to be the addition between collisionRadius of a and b
+Then, return true if distance is less than sumOfRadii
+In Player update, add a collision check with obstacles section
+Within the section, call forEach method on game's obstacles array
+For each obstacle, console log game's checkCollision method with the required references(a will be this keyword since we want a to point to the player, b will be obstacle)
+The above method will only work when the objects you are comparing have collisionX, collisionY and collisionRadius properties
+Once you see true and false being logged out in the console, remove the console log and replace it with an if condition wrapping the checkCollision call, and console log a collision text message inside the condition
+Now, whenever your player moves and collides with the collision area(circles) of your obstacles, the collision text should be logged
+Instead of just logging a collision text message, we want the player object to be pushed back in the direction opposite of the collision area of the obstacles, creating a physics push back of sorts
+Currently, checkCollision method only checks if distance between circle collisions is true or false
+In javascript, a return statement can only return 1 value(in this case if distance is less than sumOfRadii is true or false)
+But, if you wrap the statement(not the return keyword) as an array, you can return multiple values, not just 1
+We want more values such as distanceX, distanceY etc ,so, turn the statement into an array, and add distance, sumOfRadii, distanceX, and distanceY
+Since this is an array, the index order is important(index 0 will return true or false, index 1 distance value and so on)
+Take that array in your return statement you just made, copy them, and paste them in your forEach method in Player update, and COMMENT them(they will be used as visual reference here since we want to know the index order)
+They will be needed when you calculate the collision between player and obstacle
+\*\*Destructuring assignment employed here
+Still in your forEach method, to destructure the array to be read, we will assign the array you commented out to the checkCollision call on game
+What this does is for each array item, javascript will assign the checkCollision call on game separately under the hood. This is called destructuring
+For index 0 item(distance < sumOfRadii), you should change it to collision(collision will reference checkCollision's return statement)
+Remove the if condition for checkCollision call
+Add an if condition where if collision is true, set unit_x to be the division between distanceX and distance(this will always return a value smaller than 1 because distance is the hypotenuse of distanceX and distanceY)
+Also, set unit_Y to be the division of distanceY and distance
+Console logging unit_x and unit_y will show the collision coordinates between player and obstacle everytime they collide
+Remove the console log
+To 'bounce' the player out of the obstacle's circle collision, we will set the centerpoint of player's collision(collisionX) to be the obstacle's collisionX plus the sumOfRadii plus 1(these in parenthesis because you want these to be calcualted first), multiplied by unit_x
+Do the same for collisionY using collisionY and unit_y
+Try moving your player pass the obstacles(it should not be passable and your player object can actually circle around the collision area smoothly since they are both circles)
