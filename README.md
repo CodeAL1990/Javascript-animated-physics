@@ -217,3 +217,23 @@ Remove the console log
 To 'bounce' the player out of the obstacle's circle collision, we will set the centerpoint of player's collision(collisionX) to be the obstacle's collisionX plus the sumOfRadii plus 1(these in parenthesis because you want these to be calcualted first), multiplied by unit_x
 Do the same for collisionY using collisionY and unit_y
 Try moving your player pass the obstacles(it should not be passable and your player object can actually circle around the collision area smoothly since they are both circles)
+We will now add an 8-directional sprite sheet, attached to the player object
+In html, add the img tag and link the sprite sheet with an id of bull to it
+Hide the display of bull id in css
+In Player, set image property to bull's id
+In Player draw, call drawImage on context with the initial 3 parameters to see the entire spritesheet drawn on canvas
+We will need the width and height of each individual sprite as a property
+In that sprite sheet, each sprite should be 255 in width and height, and you can assign them as spriteWidth and spriteHeight respectively inside Player(remember to place them above image property because image requires them for calculation)
+After the above, create width and height properties and set them to spriteWidth and spriteHeight respectively(just like Obstacle class, this will allow us to scale them if needed later)
+Now, you can add the next 2 parameters to the drawImage to squeeze the spritesheet within the values defined by those 2 parameters(dw, dh) using the width and height
+Obviously, we will need all 9 arguments/parameters to draw out a single sprite from the spritesheet
+Add sx, sy, sw, sh to drawImage, drawing only the top left most sprite
+We mentioned previously the use of spriteX and spriteY, which will represent the top left most edge of the sprite's collision area, using collisionX and Y as the base of the calculation, which is the centerpoint of the bottom area circle collision
+Add spriteX and Y property to Player
+Currently, the collision circle for player is located at the top left edge(as defined by 0,0 in drawImage)
+To move it to the center horizontally, we will set spriteX inside Player update to be the difference between the collisionX and half of width for spriteX
+Do the same for spriteY with collisionY
+Then, replace dx and dy to spriteX and Y
+The circle collision will appear at the top of the player's head and we want it to be near its base(probably also want it to be bigger than 30)
+We can add/minus spriteY's calculation with a hardcoded value to move collision area up/down since the player's size is static(if player is scaled, then we will need a value that will match that scaling)
+The same can be appllied to spriteX to move the circle left/right

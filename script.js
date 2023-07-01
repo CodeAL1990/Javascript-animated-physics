@@ -13,15 +13,33 @@ window.addEventListener("load", function () {
       this.game = game;
       this.collisionX = this.game.width * 0.5;
       this.collisionY = this.game.height * 0.5;
-      this.collisionRadius = 30;
+      this.collisionRadius = 50;
       this.speedX = 0;
       this.speedY = 0;
       this.distanceX = 0;
       this.distanceY = 0;
       this.speedModifier = 20;
+      this.spriteWidth = 255;
+      this.spriteHeight = 255;
+      this.width = this.spriteWidth;
+      this.height = this.spriteHeight;
+      this.spriteX;
+      this.spriteY;
+      this.image = bull;
     }
 
     draw(context) {
+      context.drawImage(
+        this.image,
+        0,
+        0,
+        this.spriteWidth,
+        this.spriteHeight,
+        this.spriteX,
+        this.spriteY,
+        this.width,
+        this.height
+      );
       context.beginPath();
       context.arc(
         this.collisionX,
@@ -55,6 +73,8 @@ window.addEventListener("load", function () {
 
       this.collisionX += this.speedX * this.speedModifier;
       this.collisionY += this.speedY * this.speedModifier;
+      this.spriteX = this.collisionX - this.width * 0.5 - 5;
+      this.spriteY = this.collisionY - this.height * 0.5 - 90;
       // collisions with obstacles
       this.game.obstacles.forEach((obstacle) => {
         /* [
