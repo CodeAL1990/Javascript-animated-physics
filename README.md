@@ -237,3 +237,21 @@ Then, replace dx and dy to spriteX and Y
 The circle collision will appear at the top of the player's head and we want it to be near its base(probably also want it to be bigger than 30)
 We can add/minus spriteY's calculation with a hardcoded value to move collision area up/down since the player's size is static(if player is scaled, then we will need a value that will match that scaling)
 The same can be appllied to spriteX to move the circle left/right
+Just like the drawImage in Obstacle draw, you want to be able to navigate through the large spritesheet of player sprite, which features 8 directional sprites
+We will do so with the frameX property for horizontal navigation, and frameY for vertical(just like Obstacle's)
+The above properties will be multiplied by the relevant spriteWidth or spriteHeight in sx and sy in drawImage for Player draw respectively
+Set the aforementioned frameX and frameY property to 0 in Player
+In Player update, we will now attempt to make our player sprite face the direction our mouse cursor is placed on the canvas
+Add a sprite animation section in Player update, and in it set angle variable to Math.atan2()
+\*\* Math.atan2 returns an angle in radians between the positive x axis and a line, projected from 0, 0 coordinates towards a specific point(in this case the mouse cursor).
+The specific point mentioned will need the calculations of distanceX and distanceY in Player update, so move them above sprite animation section
+Pass in distanceY and distanceX to atan2 and console log angle
+You should see the values of from -3.14 to 3.14 when moving your mouse cursor around the canvas(remember/or know that a full circle is approx Math.PI multiplied by 2)
+Each sprite direction in the spritesheet will take up a specific area of a full circle (-3.14 to 3.14), and since we have 8 directional sprites, the full circle will be split to 8 slices base on their angle in Math.atan2
+\*\* The angle areas are calculated specifically as shown in the author's video(1:16:17)
+After angle variable, add an if condition to check if angle is less than each value(more than would not work here because there will be one with infinite value), followed by several else if, till all 8 directions are covered in the code, setting frameY(the direction the sprite is facing) to the appropriate angle value
+\*\*The above will be better understood watching the (1:16:17) part
+For frameY 6, and 7, you will need to be more specific with the conditions due to how the Math.atan2 line is drawn (which again is better if you watch 1:16:17 to understand)
+After the above, move your player around with your cursor and your sprite should be able to face all 8 directions when moving around the canvas
+For frameY 6 and 7, placing them last in the else if statement makes the transition abit too fast(in javascript the order in which the if statements are placed dictates it), so place them at the front(6,7,0 to 5 ordering)
+With the change, your transition from frameY 0 to 7, 6 and frameY 5 to 6, 7 should be smoother(Change your speedModifier value in Player to slow down the sprite movements so you can see the transitions better)
