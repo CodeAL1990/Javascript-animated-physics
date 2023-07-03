@@ -255,3 +255,19 @@ For frameY 6, and 7, you will need to be more specific with the conditions due t
 After the above, move your player around with your cursor and your sprite should be able to face all 8 directions when moving around the canvas
 For frameY 6 and 7, placing them last in the else if statement makes the transition abit too fast(in javascript the order in which the if statements are placed dictates it), so place them at the front(6,7,0 to 5 ordering)
 With the change, your transition from frameY 0 to 7, 6 and frameY 5 to 6, 7 should be smoother(Change your speedModifier value in Player to slow down the sprite movements so you can see the transitions better)
+The circle collisions are there visually for us to adjust where the collisions should be placed, and not to be shown to players playing the game
+As such, we will need a debug mode where it can hide/show the collision circles
+We will do this using a keydown event listener on window in Game
+In Game, set debug property to true and create the previously mentioned keydown event listener in the event listeners section
+Use e for the arrow callback function and using the available key property in keydown, set a condition where if e.key of letter d is true, set debug to false(you can use !this.debug to denote false as well), then console log debug property and press d multiple times, and console should switch between true and false for each d press
+Comment/Remove the console log, and in Obstacle draw, wrap the collision circle drawings(beginPath till stroke) in a condition to check if game's debug property is true, then invoke the drawings
+Now, pressing d should witch the collision circles of obstacles off or on
+Do the same for Player
+Currently, your player can move out of the canvas, and 'float' across the forest background layer, which is not ideal and we want to create boundaries that player should not be able to cross
+Add horizontal boundaries section right above collisions with obstacles section
+Inside horizontal boundaries section, set a condition where if collisionX is less than collisionRadius, set collisionX to collisionRadius(left side)
+Else if collisionX is more than the game's width minus the collisionRadius, set it to game's width minus collisionRadius(right side)
+Add vertical boundaries section
+Set a condition where if collisionY is less than game's topMargin plus collisionRadius, set collisionY to game's topMargin plus collisionRadius(top side)
+Else if collisionY is more than the game's height minus collisionRadius, set collisionY to game's height minus collisionRadius
+You can tweak values in collisionRadius, or margin variable in init to make sure player obstacles spawn points never obstruct the area between topMargin and obstacle for player(if you want)
