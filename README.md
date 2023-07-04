@@ -223,7 +223,7 @@ Hide the display of bull id in css
 In Player, set image property to bull's id
 In Player draw, call drawImage on context with the initial 3 parameters to see the entire spritesheet drawn on canvas
 We will need the width and height of each individual sprite as a property
-In that sprite sheet, each sprite should be 255 in width and height, and you can assign them as spriteWidth and spriteHeight respectively inside Player(remember to place them above image property because image requires them for calculation)
+In that sprite sheet, each sprite should be 255 in width and 256 in height, and you can assign them as spriteWidth and spriteHeight respectively inside Player(remember to place them above image property because image requires them for calculation)
 After the above, create width and height properties and set them to spriteWidth and spriteHeight respectively(just like Obstacle class, this will allow us to scale them if needed later)
 Now, you can add the next 2 parameters to the drawImage to squeeze the spritesheet within the values defined by those 2 parameters(dw, dh) using the width and height
 Obviously, we will need all 9 arguments/parameters to draw out a single sprite from the spritesheet
@@ -271,3 +271,25 @@ Add vertical boundaries section
 Set a condition where if collisionY is less than game's topMargin plus collisionRadius, set collisionY to game's topMargin plus collisionRadius(top side)
 Else if collisionY is more than the game's height minus collisionRadius, set collisionY to game's height minus collisionRadius
 You can tweak values in collisionRadius, or margin variable in init to make sure player obstacles spawn points never obstruct the area between topMargin and obstacle for player(if you want)
+We will now allow our game to normalise itself to the user's screen refresh rate, attempting to achieve similar game speeds across different computers
+requestAnimationFrame will refresh itself automatically approx every 60 frames per second, and will generate a timestamp
+We will make use of that timestamp to achieve a normalised game speed for all
+Create variable lastTime before animate method(i used previousTimeStamp for more clarity) and set it to 0
+Pass a timeStamp reference in animate method
+console logging timeStamp inside animate and you should see numbers rapidly increasing, due to requestAnimationFrame, in milliseconds
+Remove the console log and create deltaTime variable inside animate, which will calculate the difference between timeStamp(which is the timeStamp reference) of CURRENT animation loop and timeStamp(previousTimeStamp) of the PREVIOUS animation loop
+After the calculation above, set previousTimeStamp to the current timeStamp(so the function will continuously take the current timeStamp to replace previousTimeStamp and update it when the next requestAnimationFrame runs)
+If you console log deltaTime inside animate, you should see 1000 divided by 60(16) per second but if you have a slower computer, the value 60 might be lower
+Notice that your first two numbers are NaN, because the initial loops do not have a number to them as the code is triggered by animate call which has no references in it
+To prevent your deltaTime related codes from not running(because we will use them to normalise game speed) due to NaN, pass the number 0 in animate call so it has an initial number attached to it, allowing javascript to calculate in the console
+To make use of deltaTime calculation to determine frame rate of the game, we will need helper properties in Game
+In Game, set fps property to 20, timer to 0, and interval to 1000 divided by fps
+Inside Game render method, set a condition where if timer is greater than interval, invoke the render on player and Obstacle(the code you had inside render)
+Then, within the condition, set timer back to 0
+After the condition, set timer to increments of deltaTime
+What the above does is render runs, the condition will not be true until the deltaTime increments in timer property exceeds interval, then it will turn true, running the code inside and setting timer back to 0, and the increments begins again
+You will need to pass deltaTime as a reference in render method
+Also pass it inside the render call inside animate
+You will now have flashing sprites in your canvas because we are deleting old paint(clearRect in animate) but only drawing new sprites when reaching interval
+You will need to remove clearRect method in animate, and add it to the interval condition(you will need to pass the Game properties inside clearRect since you are inside Game class now)
+Now, your game should run base on the fps property value in Game class(not entirely because 60 fps value is not actually 60 fps since there are some left numbers after every interval since there are decimal places --> to account for this if you wanna achieve lets say 60 fps, your value in Game's fps property should be higher, like 70)

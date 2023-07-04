@@ -18,9 +18,9 @@ window.addEventListener("load", function () {
       this.speedY = 0;
       this.distanceX = 0;
       this.distanceY = 0;
-      this.speedModifier = 5;
+      this.speedModifier = 10;
       this.spriteWidth = 255;
-      this.spriteHeight = 255;
+      this.spriteHeight = 256;
       this.width = this.spriteWidth;
       this.height = this.spriteHeight;
       this.spriteX;
@@ -176,6 +176,9 @@ window.addEventListener("load", function () {
       this.height = this.canvas.height;
       this.topMargin = 200;
       this.debug = true;
+      this.fps = 70;
+      this.timer = 0;
+      this.interval = 1000 / this.fps;
       this.numberOfObstacles = 10;
       this.obstacles = [];
       this.player = new Player(this);
@@ -210,10 +213,15 @@ window.addEventListener("load", function () {
         if (e.key === "d") this.debug = !this.debug;
       });
     }
-    render(context) {
-      this.player.draw(context);
-      this.player.update();
-      this.obstacles.forEach((obstacle) => obstacle.draw(context));
+    render(context, deltaTime) {
+      if (this.timer > this.interval) {
+        context.clearRect(0, 0, this.width, this.height);
+        this.player.draw(context);
+        this.player.update();
+        this.obstacles.forEach((obstacle) => obstacle.draw(context));
+        this.timer = 0;
+      }
+      this.timer += deltaTime;
     }
 
     checkCollision(a, b) {
@@ -267,11 +275,13 @@ window.addEventListener("load", function () {
   game.init();
   console.log(game);
 
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    game.render(ctx);
+  let previousTimeStamp = 0;
+  function animate(timeStamp) {
+    const deltaTime = timeStamp - previousTimeStamp;
+    previousTimeStamp = timeStamp;
+    game.render(ctx, deltaTime);
     requestAnimationFrame(animate);
   }
 
-  animate();
+  animate(0);
 });
