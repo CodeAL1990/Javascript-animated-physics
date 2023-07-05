@@ -169,6 +169,45 @@ window.addEventListener("load", function () {
     }
   }
 
+  class Egg {
+    constructor(game) {
+      this.game = game;
+      this.collisionX = Math.random() * this.game.width;
+      this.collisionY = Math.random() * this.game.height;
+      this.collisionRadius = 40;
+      this.image = egg;
+      this.spriteWidth = 110;
+      this.spriteHeight = 135;
+      this.width = this.spriteWidth;
+      this.height = this.spriteHeight;
+      this.spriteX = this.collisionX + this.width * 0.5;
+      this.spriteY = this.collisionY + this.height * 0.5;
+    }
+    draw(context) {
+      context.drawImage(this.image, this.spriteX, this.spriteY);
+
+      if (this.game.debug) {
+        context.beginPath();
+        context.arc(
+          this.collisionX,
+          this.collisionY,
+          this.collisionRadius,
+          0,
+          Math.PI * 2
+        );
+        context.save();
+        context.globalAlpha = 0.5;
+        context.fill();
+        context.restore();
+        context.stroke();
+        context.beginPath();
+        context.moveTo(this.collisionX, this.collisionY);
+        context.lineTo(this.game.mouse.x, this.game.mouse.y);
+        context.stroke();
+      }
+    }
+  }
+
   class Game {
     constructor(canvas) {
       this.canvas = canvas;
@@ -180,7 +219,9 @@ window.addEventListener("load", function () {
       this.timer = 0;
       this.interval = 1000 / this.fps;
       this.numberOfObstacles = 10;
+      this.maxEggs = 10;
       this.obstacles = [];
+      this.eggs = [];
       this.player = new Player(this);
       this.mouse = {
         x: this.width * 0.5,
@@ -237,6 +278,8 @@ window.addEventListener("load", function () {
         distanceY,
       ];
     }
+
+    addEgg() {}
 
     init() {
       let attempts = 0;

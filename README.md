@@ -293,3 +293,17 @@ Also pass it inside the render call inside animate
 You will now have flashing sprites in your canvas because we are deleting old paint(clearRect in animate) but only drawing new sprites when reaching interval
 You will need to remove clearRect method in animate, and add it to the interval condition(you will need to pass the Game properties inside clearRect since you are inside Game class now)
 Now, your game should run base on the fps property value in Game class(not entirely because 60 fps value is not actually 60 fps since there are some left numbers after every interval since there are decimal places --> to account for this if you wanna achieve lets say 60 fps, your value in Game's fps property should be higher, like 70)
+Now, create an Egg class, passing it game reference, convert it, and set collisionX and Y to a randomised number between 0 to the game's full width or height respectively
+Set collisionRadius to 40 for now
+Set image to the image's id(link the egg image to a html img tag and set it to a display of none in css)
+Set spriteWidth and spriteHeight to their appropriate values(check it in developer's mode, and it should be displayed on the tab if you are on linux)
+Then, set width and height to spriteWidth and spriteHeight respectively for scaling purposes if needed
+As usual, we will center the collision area on the image using spriteX and spriteY(for spriteY closer to the base so some adjustments need to be made later)
+Create custom draw method in Egg class, pass in context reference, and use drawImage on context
+We will only need 3 parameters here for drawImage because it's a single sprite image(if the image is scaled later we will need 5)
+Pass in the image, and the destination X and Y(dx,dy) of the image which are spriteX and spriteY
+Since we are standardizing our codes in all our classes, we can reuse certain parts, such as the debug mode condition in other classes' draw method, to new classes that require them
+Bring in the debug condition into Egg draw so the collision circle will appear for Egg object as well(Since we are reusing the same code for each class, we can refactor it into a custom method on its own so each of those classes can reference said custom method instead)
+Inside Game, add a new addEgg custom method which will periodically add eggs into the game
+Add eggs property in game and assign it an empty array
+Add maxEggs property in game and set it to 10 to prevent endlessly spawning eggs
