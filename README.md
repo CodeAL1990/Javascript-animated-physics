@@ -307,3 +307,25 @@ Bring in the debug condition into Egg draw so the collision circle will appear f
 Inside Game, add a new addEgg custom method which will periodically add eggs into the game
 Add eggs property in game and assign it an empty array
 Add maxEggs property in game and set it to 10 to prevent endlessly spawning eggs
+Inside Game render, create a section called add eggs periodically
+Similar to the condition with timer and interval above, we will be applying that to the spawning of eggs
+We will need a helper property for egg spawns, so add an eggTimer property and set it to 0
+Add eggInterval and set it to 500(0.5 seconds) or any number you want
+Now inside the add eggs periodically section, set a condition where if eggTimer is more than eggInterval, we will add the egg with the addEgg custom method which is currently empty
+Inside addEgg method, we will use push an instance of Egg class inside eggs array, passing in the required game reference(this)
+Back in add eggs peridically section, we will set eggTimer back to 0 in the condition, and just like the timer and interval for player, we will increment eggTimer by deltaTime to activate the condition(\*\* you can add an else keyword to it but if it's only 1 additional statement, you can remove else and it would still work the same as an else statement)
+Also, you will need to add an AND condition where eggs length is less than maxEggs(so you will not spawn eggs endlessly)
+Console log the eggs array in the condition to check if the array has all the properties you want in it
+Once the above is satisfactory, you will now draw it in your render method
+Similar to obstacles, you will now apply a forEach method for eggs after it to draw new instances of Egg inside the canvas
+So, in the forEach method for eggs, for each egg, you will call draw on egg, passing in the context
+You should have eggs spawning on your canvas now with the collision circles centered on the egg(if they are out of position, check your calculations for spriteX and spriteY in Egg)
+\*\* I had the lines connecting from each egg to the player so check if you had the moveTo and lineTo methods(which were from player) pasted in the debug code for your eggs
+Just like for player and obstacles, we will adjust add/offset values in spriteY so that the collision area will be adjusted to near the base of the egg
+Currently, the eggs spawn everywhere on the canvas, and you want to limit the spawn area within the areas where player can 'push' these eggs towards the 'forest'(the author wants this game to spawn monsters which will eat eggs and the hatchlings and player needs to push the hatchlings and eggs towards the 'forest' to save them)
+To limit them, we will create a margin property in Egg, assigning it twice the value of collisionRadius for now
+In collisionX for Egg, we will add this margin, and instead of a random number between 0 to game's width, you will offset game's width by twice the margin(the margin addition represents the left margin, while the offset on game's width with twice the margin represents the right margin)
+Check that horizontally, the eggs will not spawn on the left and right edges now
+Now vertically, we will do something similar to collisionY in Egg
+Since we have a topMargin defining the 'forest' area in game, we will add that into collisionY calculation, and instead of 0 to game's height, offset game's height by game's topMargin(top edge) and margin(bottom edge), the latter preventing eggs from spawning too close to the bottom of the canvas
+Hatchlings will hatch from the eggs, and eggs will be 'indestructible', meaning both player and enemies will just 'push' the eggs, while hatchlings can be pushed by player, but will be consumed by enemies/monsters
