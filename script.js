@@ -167,6 +167,7 @@ window.addEventListener("load", function () {
         context.stroke();
       }
     }
+    update() {}
   }
 
   class Egg {
@@ -184,8 +185,8 @@ window.addEventListener("load", function () {
       this.spriteHeight = 135;
       this.width = this.spriteWidth;
       this.height = this.spriteHeight;
-      this.spriteX = this.collisionX - this.width * 0.5;
-      this.spriteY = this.collisionY - this.height * 0.5 - 30;
+      this.spriteX;
+      this.spriteY;
     }
     draw(context) {
       context.drawImage(this.image, this.spriteX, this.spriteY);
@@ -208,6 +209,22 @@ window.addEventListener("load", function () {
         context.stroke();
       }
     }
+
+    update() {
+      this.spriteX = this.collisionX - this.width * 0.5;
+      this.spriteY = this.collisionY - this.height * 0.5 - 30;
+      let collisionObjects = [this.game.player, ...this.game.obstacles];
+      collisionObjects.forEach((object) => {
+        let [collision, distance, sumOfRadii, distanceX, distanceY] =
+          this.game.checkCollision(this, object);
+        if (collision) {
+          const unit_x = distanceX / distance;
+          const unit_y = distanceY / distance;
+          this.collisionX = object.collisionX + (sumOfRadii + 1) * unit_x;
+          this.collisionY = object.collisionY + (sumOfRadii + 1) * unit_y;
+        }
+      });
+    }
   }
 
   class Game {
@@ -221,9 +238,10 @@ window.addEventListener("load", function () {
       this.timer = 0;
       this.interval = 1000 / this.fps;
       this.eggTimer = 0;
-      this.eggInterval = 500;
+      this.eggInterval = 1000;
       this.numberOfObstacles = 10;
-      this.maxEggs = 10;
+      this.maxEggs = 20;
+      this.gameObjects = [];
       this.obstacles = [];
       this.eggs = [];
       this.player = new Player(this);
@@ -261,10 +279,16 @@ window.addEventListener("load", function () {
     render(context, deltaTime) {
       if (this.timer > this.interval) {
         context.clearRect(0, 0, this.width, this.height);
-        this.obstacles.forEach((obstacle) => obstacle.draw(context));
-        this.eggs.forEach((egg) => egg.draw(context));
-        this.player.draw(context);
-        this.player.update();
+        this.gameObjects = [...this.eggs, ...this.obstacles, this.player];
+        // sort by vertical position
+        this.gameObjects.sort((a, b) => {
+          return a.collisionY - b.collisionY;
+        });
+
+        this.gameObjects.forEach((object) => {
+          object.draw(context);
+          object.update();
+        });
         this.timer = 0;
       }
       this.timer += deltaTime;
@@ -273,7 +297,7 @@ window.addEventListener("load", function () {
       if (this.eggTimer > this.eggInterval && this.eggs.length < this.maxEggs) {
         this.addEgg();
         this.eggTimer = 0;
-        console.log(this.eggs);
+        //console.log(this.eggs);
       }
       this.eggTimer += deltaTime;
     }

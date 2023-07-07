@@ -329,3 +329,32 @@ Check that horizontally, the eggs will not spawn on the left and right edges now
 Now vertically, we will do something similar to collisionY in Egg
 Since we have a topMargin defining the 'forest' area in game, we will add that into collisionY calculation, and instead of 0 to game's height, offset game's height by game's topMargin(top edge) and margin(bottom edge), the latter preventing eggs from spawning too close to the bottom of the canvas
 Hatchlings will hatch from the eggs, and eggs will be 'indestructible', meaning both player and enemies will just 'push' the eggs, while hatchlings can be pushed by player, but will be consumed by enemies/monsters
+Create custom update method in Egg to apply physics to Egg object when interacting with certain canvas elements
+Inside update, create a collisionObjects variable and assign an array to it
+Inside the array, pass in game's player, and a spread of game's obstacles(you need a spread operator because obstacles is an array itself, and javascript needs a flattened array to be able to read the array)
+The two items in the array are objects the eggs will interact with
+Call forEach method on collisionObjects, and for each object, just like you did for collisions with obstacles in player, you will have a destructed array with collision, distance, sumOfRadii, distanceX, and distanceY passed into the array, and assign the checkCollision call on game on the destructed array
+checkCollision call requires two references a,b(a will be the egg so pass in this keyword, and b will be each individual object in collisionObjects, so pass in object for b)
+And just like how we detect for collision in Player update, we will do it for egg, with the exception that instead of colliding in place and player is not allowed to push obstacles, eggs will be pushed by player(and monsters that we will create later)
+\*\* The forEach method on collisionObjects, similar to game's obstacles forEach method in player Update, acts as the 'anchor' and will not be moved by the object it is colliding with
+Set a condition after the call on game's checkCollision, if collision is true, set unit_x to distanceX divided distance(hypotenuse between distanceX and Y)
+Set unit_y to distanceY divided by distance
+Set collisionX to object's collisionX, plus the sumOfRadii plus 1(parenthesis), multiply by unit_x
+Do the same for collisionY(these calculations are the same as the collision condiiton in player update)
+In game's render method, in addition to draw call on each egg, call the update method on each egg to activate Egg update method
+Test it in your browser and notice that player will push the collision circle but not the egg itself
+To 'stick' the collision area to the egg images, move the spriteX and Y properties with their calculations into Egg update, and set spriteX and Y as properties with no assignments
+Now, the collision circles should be 'pushed' along with their assigned eggs
+Currently, if you mess with the game a little, you will notice that the depth perception is off because when you push the eggs, depending on the order inside render method, your eggs will be at the front or behind the obstacles regardless of position, same with your player
+What you want is when you are at a certain vertical level, player and eggs should visually be in front of obstacles when below them and behind them visually when they are behind the obstacles
+To do this you will need an array of player, eggs, obstacles, and draw them in order of verticality
+Add new Game property called gameObjects and assign it an empty array
+In game render, set gameObjects to an array with a spread of eggs, a spread of obstacles, and player
+Then, create a new forEach method for gameObjects, and for each object, call the object's draw and update methods(it is important for the array items to have their associated draw and update methods or the code will break)
+You can now remove the forEach methods for eggs array, obstacles array, and the draw and update call on player because we will now do all that using gameObjects
+You should get an error now because Obstacle do not have an update method
+Create an update method for Obstacle and leave it empty for now
+It should work now because there is an Obstacle update method(albeit empty)
+In Game render, add a section called sort by vertical position, place it before the forEach method on gameObjects(the forEach method is when you draw them)
+We will use built-in javascript sort method on gameObjects, passing in a custom arrow function, with a and b references, and in that function, return the difference between a's collisionY, and b's collisionY
+Inside the canvas, when the eggs are below the vertical position of the obstacle, your eggs should appear in front of them, and when the eggs are above the vertical position of the obstacle, they will appear behind them
