@@ -358,3 +358,39 @@ It should work now because there is an Obstacle update method(albeit empty)
 In Game render, add a section called sort by vertical position, place it before the forEach method on gameObjects(the forEach method is when you draw them)
 We will use built-in javascript sort method on gameObjects, passing in a custom arrow function, with a and b references, and in that function, return the difference between a's collisionY, and b's collisionY
 Inside the canvas, when the eggs are below the vertical position of the obstacle, your eggs should appear in front of them, and when the eggs are above the vertical position of the obstacle, they will appear behind them
+We will now create an Enemy class object
+Pass in game reference in and convert it because we want access to game class' properties
+Due to how our code is set up, we want identical properties inside Enemy such as collisionX, Y, collisionRadius
+collisionX will be set to game's width, Y will be randomised between 0 to game's height, collisionRadius value of your choice
+Set speedX(represents speed of enemy) to a randomised number between 0.5 to 3.5
+Bring in toad in html, display none in css, and bring the image in Enemy property
+Set spriteWidth and height to the appropriate values for toad/enemy
+Set width and height to spriteWidth and spriteHeight respectively for scaling purposes as always
+Set spriteX and Y assigned to nothing(we will calculate it inside the update method)
+Create Enemy draw method, passing in context reference
+Use drawImage on context and pass in the initial 3 parameters to draw enemy image
+Duplicate the debug code into Enemy draw(just like the other draw methods)
+Create Enemy update and set collisionX to a decrement of speedX(a new property unique to Enemy) which will move enemy to the left
+Below it, set a condition where if spriteX plus width is less than 0(when sprite moves out of canvas to the left), set collisionX to game's width, and collisionY to a randomised number between 0 and game's height(this will make enemy appear again from the right and move in a random vertical fashion)
+Similar to eggs, you will have a custom addEnemy function in main game class
+Set enemies property in Game to an empty array
+Use push method on enemies array a new instance of Enemy class, passing in the required reference(game which is this keyword since the method is inside game class)
+Inside init method, create a for loop, starting at index 0, with a limit of 3 and incrementing
+Inside that for loop, call addEnemy and console log it to check the Enemy class objects properties inside enemies array and make sure nothing is undefined
+Remove/comment the console log
+Remember that gameObjects variable we refactored for player, eggs and obstacles? You can now spread enemies array inside gameObjects array and the sort and forEach method on gameObjects will now handle the draw and update on Enemy without bloating the codebase
+As we decided to do the calculations inside Enemy update for spriteX and Y, do it now by centering spriteX via offsetting collisionX with half of width
+Do the same for spriteY
+Now, just like for obstacles, player, and eggs, we want to adjust the collision circle of enemies closer to the base of its model, which we will do so via offsetting spriteY with a value
+Currently, collisionX is resetted in the condition in Enemy update by assigning it to game's width
+We want to add width(spriteWidth) of the sprite so when enemies appear from the right of the canvas again it should not appear full-sized immediately, but slowly appearing from the right edge of canvas
+Add a randomised number between 0 and half of game's width so they appear randomly from the right
+For collisionY, we do not want enemies to appear 'floating' above or anywhere too close to the forest, which is defined by topMargin
+Add topMargin into collisionY calculations so enemies only appear below the forest and not on, or above it
+We will also need to offset the topMargin when calculating a random number between 0 and game height(apparently for bottom margin it counts the browser too? not sure about this)
+For the changes in collisionX and Y, you will need to change it in Enemy properties and in Enemy update(Enemy properties is the initial creation and update is how the enemies are re-created on canvas)
+You will also need to move collisionX and Y properties below width property so collisionX, which now includes width, can have access to width property value
+You can reuse the code in Egg update regarding collisionObjects and its forEach method
+Just like how eggs can be pushed away from player and obstacles, this will allow enemies to be pushed away by player and obstacles as well, creating a nice sliding effect when enemies have to collide and move pass player/obstacles
+Using this logic, you can add a spread of eggs array inside collisionObjects in Enemy update if you want the eggs to be immovable when colliding with enemy or you can add a spread of enemies array inside collisionObjects in Egg update so enemies can push eggs away when colliding
+We will go with the latter in this case
