@@ -394,3 +394,52 @@ You can reuse the code in Egg update regarding collisionObjects and its forEach 
 Just like how eggs can be pushed away from player and obstacles, this will allow enemies to be pushed away by player and obstacles as well, creating a nice sliding effect when enemies have to collide and move pass player/obstacles
 Using this logic, you can add a spread of eggs array inside collisionObjects in Enemy update if you want the eggs to be immovable when colliding with enemy or you can add a spread of enemies array inside collisionObjects in Egg update so enemies can push eggs away when colliding
 We will go with the latter in this case
+Now, we want a Larva class which will be the hatchlings mention above, which the player would want to push away from incoming monsters, into the forest to gain points
+Create Larva class, passing it game, x and y references, and convert game to class property, collisionX and Y to x and y
+Add collisionRadius as usual, and bring in the larva image to html, set its display to none, and bring it into Larva class
+Set its spriteWidth and spriteHeight, and set width and height for scaling purposes(no elaboration here because we did it before)
+Just like your other class objects, you will also need spriteX and Y properties, and their calculations will be done in its update method
+Create draw method and pass in context, and use drawImage on context
+Pass in the 3 initial parameters for drawImage using the image, spriteX, and spriteY(just like your other draw methods)
+Your larva/hatchlings will be moving vertically upwards towards the forest to safety so we will need them to move vertically
+Add speedY property and it will be moving at a speed of 1 to 2 (1 + Math.random() because Math.random gives a value from 0 to 1)
+Create update method, and set collisionY to a decrement of speedY
+\*\* Class objects that are constantly moving needs to be called again and again to give the illusion of 'moving/animating',and as such, the update method will need to constantly track their collision circle positions, so we will need to do the calculations for spriteX and Y inside Larva update method
+After setting collisionY, set spriteX to collisionX offset by half of width(just like the previous update methods)
+Do the same for spriteY
+We will now write egg hatching logic
+Just like enemies, and eggs, we will introduce timers for eggs to 'hatch' these larvas
+In Egg, add hatchTimer and set it to 0, and add hatchInterval and set it to 5000(5 seconds)
+Inside Egg update method, add a hatching section, and set a condition where if hatchTimer is more than hatchInterval, hatch the egg(remove egg and larva appears) and set hatchTimer back to 0(sounds familiar?)
+Else, increment hatchTimer by deltaTime
+Since we are using deltaTime, we will need to pass it as reference to update
+We will also need to pass in deltaTime to update in render method for object
+To hatch the egg, we will need a property in Egg called markedForDeletion, setting it false
+In the hatching condition, when hatchTimer is more than hatchInterval, set markedForDeletion to true
+Then, call removeGameObjects(not yet made) on game
+Inside Game, create new custom method removeGameObjects, and inside it, call filter on eggs array, and for each object, if it has markedForDeletion property set to true, filter them out
+Back in hatching condition, console log eggs array to see that your eggs are being removed and added
+Once the above is working, we will now add a visible hatch timer above each egg when in debug mode
+In Egg draw's debug condition, call fillText method on context, passing it in hatchTimer(what you want to draw), and collisionX and Y(where you want to draw it)
+Now, you want to set font size and style in the global scope, right at the start of your codebase, alongside your fillStyle, lineWidth and other css styling for canvas
+\*\* Placing them in global scope will run them only once as oppose to running them at 60 times a second inside custom methods which are continually running due to requestAnimationFrame
+Set ctx.font to 40px Helvetica(or whatever you want) in global scope
+Back in Egg draw's debug condition, create displayTimer variable and call toFixed on hatchTimer, passing 0 to it
+You can now replace hatchTimer parameter in fillText to displayTimer variable you just created
+You can adjust positions of the text by offsetting or adding values to collisionX for horizontal and collisionY for vertical(you can use collisionRadius so you do not use a hardcoded value)
+For horizontal positioning, instead of making adjustments to collisionX, you can use built-in css method, and call textAlign to center on ctx globally
+You should see a number above the egg(or wherever you adjust the fillText)continuously increasing from 0 to 5000(or whatever your hatchInterval is) milliseconds before it disappears
+Instead of milliseconds, you can convert it to seconds by multiplying hatchTimer inside displayTimer by 0.001
+In Game, add hatchlings property and assign it an empty array
+In hatching condition, use push method on game's hatchlings array, pushing in a new instance of Larva, passing the required references game, x, y
+In render method, add a spread of hatchlings inside gameObjects array
+Ignore the double hatchlings for now, and inside Larva update, add a section called move to safety where we check if larva has reached 'safe zone'
+In the above section, set a condition where if collisionY is less than game's topMargin, set markedForDeletion to true, and call removeGameObjects on game
+Inside removeGameObjects custom method, just like eggs array, filter hatchlings array for markedForDeletion on each hatchling(or you can keep it as object) that is true
+Add the debug mode condition into Larva draw as well
+Since the larva spritesheet has two larva sprites in it, we want to crop only 1 of it on canvas at any given time
+We will need to so in the drawImage method in Larva draw, using all 9 parameters
+For sx, sx, sw, and sh, we will pass in 0,0(starting crop position), and spriteWidth, spriteHeight(ending crop position)
+For dw, dh, we will pass in width and height(it does not matter here if you use spriteWidth or spriteHeight since we are assigning them to width and height and have not scaled(yet))
+As always, adjust collision circle of larva to match the base of its model inside spriteY
+To animate the larva we will again use helper variables such as frameX or/and frameY, and since the larva spriteSheet only has two sprites, one on top and one at the bottom, we will need only frameY property
