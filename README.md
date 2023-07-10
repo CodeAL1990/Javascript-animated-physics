@@ -442,4 +442,29 @@ We will need to so in the drawImage method in Larva draw, using all 9 parameters
 For sx, sx, sw, and sh, we will pass in 0,0(starting crop position), and spriteWidth, spriteHeight(ending crop position)
 For dw, dh, we will pass in width and height(it does not matter here if you use spriteWidth or spriteHeight since we are assigning them to width and height and have not scaled(yet))
 As always, adjust collision circle of larva to match the base of its model inside spriteY
-To animate the larva we will again use helper variables such as frameX or/and frameY, and since the larva spriteSheet only has two sprites, one on top and one at the bottom, we will need only frameY property
+To animate the larva we will again use helper variables such as frameX and frameY, and since the larva spriteSheet only has two sprites, one on top and one at the bottom, we will have frameX as 0 and frameY as a randomised number between 0 and 1(using Math.floor)
+In Larva draw's drawImage, replace the 0s of sx, sy to frameX multiplied by spriteWidth for sx, and frameY multiplied by spriteHeight for sy
+We will now deal with the collision between larva-player, larva-obstacles
+larva-enemies will have a different interaction when colliding
+In Larva update, add a section called collision with objects
+We will use the code for collisions similar to how we did it for Egg so you can copy and paste that code block inside the new section for now
+Remove the spread of enemies inside collisionObjects in Larva update, because as mentioned above, there will be a different interaction for larva-enemies
+After collision with objects section, add a collision with enemies where we will write the logic for larva-enemies interaction
+Inside collision with enemies, use forEach method on game's enemies array, and for each enemy, set a condition and call checkCollision on game, passing Larva, and enemy, so each instance of larva class will check when they collide with any enemy
+You only need the collision array item inside the destructured array of 5 items, so you can add an index of 0 on the checkCollision call, to check if collision is true
+We only need to check for collision because we are not doing any colliding logic between larva-enemies as the moment they touch, larva will be deleted, to imitate the enemy 'eating' the larva
+As such, inside the condition for the checkCollision call, set markedForDeletion to true
+Then, call our custom removeGameObjects method on game to filter the larva out
+\*\* For the scoring part, author uses two properties, score and lostHatchlings, one to signify you gained score when pushing a larva to safety, and the other when an enemy eats a larva(which i find rather convoluted, why not just ++score and --score? but we will follow it for now)
+So after calling removeGameObjects to filter larva being 'eaten', decrement game's lostHatchlings(not yet made) by 1
+Back in move to safety section, after calling removeGameObjects to filter larva moving to safety in the forest, increment game's score(not yet made) by 1
+In Game, set score and lostHatchlings properties to 0
+Inside the game's render method, add a section in game called draw status text, and inside it we will use fillText method on context, drawing Score text at coordinate 25, 50
+Notice that you Score text is abit awry on the canvas due to the global textAlign method you used for your eggs for debugging purposes
+We can use save and restore method to isolate this particular fillText method
+Inside this save and restore, you can then set textAlign to left for this fillText
+Now, your Score text should be displayed at the appropriate coordinates
+Once your Score text is displayed properly, you can add use template literals to display the value in game's score property dynamically, or use the normal '"+ to display score
+You should be able to see your score increasing when larvas move into the forest
+Additionally, inside draw status text, and within the save and restore method, check condition for debug(since we are inside game you can reference debug property directly), and inside the condition, call fillText method on context and display how many hatchlings/larva were lost(lostHatchlings) at coordinates 25, 100
+This Lost text and its value will only be displayed when debug mode is active
