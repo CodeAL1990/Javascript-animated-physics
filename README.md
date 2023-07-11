@@ -468,3 +468,34 @@ Once your Score text is displayed properly, you can add use template literals to
 You should be able to see your score increasing when larvas move into the forest
 Additionally, inside draw status text, and within the save and restore method, check condition for debug(since we are inside game you can reference debug property directly), and inside the condition, call fillText method on context and display how many hatchlings/larva were lost(lostHatchlings) at coordinates 25, 100
 This Lost text and its value will only be displayed when debug mode is active
+Currently, there is no visual cue when larva escapes into the forest, or when monster eats the larva
+We will add particle effects so players will have visual cues for the above events
+We will use the concept of sub-classing for particles
+Create parent class Particle above Game class, and create child classes Firefly and Spark using the extends keyword
+In parent Particle class, pass in game, x, y, and color
+Convert game and color to class properties, and assign x,y to collisionX,Y respectively
+Set radius property to a randomised value between 5 and 10, only including integers
+Set speedX to a randomised value between -3 and 3
+Set speedY to a randomised value between 0.5 and 2.5
+Set angle to 0
+Set velocityAngle to a randomised value between 0.01 and 0.11
+Set markedForDeletion to false
+Create Particle draw method, passing in context reference
+We will be drawing these particles using fillSTyle, beginPath, stroke etc, so we want to wrap those codes inside the save and restore method so we isolate it to Particle draw only without affect the rest of the codebase
+Between the save and restore, use fillStyle on context and set it to color property
+Call beginPath on context, and use built-in arc method(x, y, radius, start angle, end angle), passing in all the required arguments
+x,y is the horizontal and vertical centerpoints which are collisionX,Y, radius is already defined in properties, and to draw a full circle we will start at 0, and end at a Math.PI multiplied by 2 angle
+Call fill on context, then stroke on context
+In Firefly and Spark child class, they will have custom update methods
+Since they are child classes, javascript will look for properties and methods in their parent class if they lack it, allowing child classes to only include features that are specific/unique to them
+In Firefly update, we will increment angle property by velocityAngle
+Increment collisionX by speedX(speedX is a randomised negative or positive value, so this will cause them to go right or left)
+Decrement collisionY by speedY(Upwards)
+Set a condition if collisionY is less than 0 minus radius(Firefly particle goes above the canvas), set markedForDeletion to true, and call removeGameObjects on game
+In Game class, create particles property, and assign it an empty array
+In Game render, spread particles array into gameObjects array to be sorted, drawn and updated
+Inside removeGameObjects method, we will add a filter method to remove particles with the appropriate boolean property for particles array, just like we did for eggs and hatchlings
+Firefly particle effect will appear when larva successfully escapes into the forest, so we will place a push method on game's particles array after we score a point(in move to safety section), pushing in a new instance of Firefly child class, with the appropriate references which are defined in its parent class
+For color reference, you can pass in whatever color you like and you should see a 'bubble' floating upwards whenever a larva escapes/moves into forest
+To create a 'burst' of bubbles, you can create a for loop(with a limitation of your choice) and place that push method inside it
+You can change global strokeStyle to black which will affect the collision circles as well as the bubble particle effect(global scopes are more performance friendly)
