@@ -456,7 +456,7 @@ We only need to check for collision because we are not doing any colliding logic
 As such, inside the condition for the checkCollision call, set markedForDeletion to true
 Then, call our custom removeGameObjects method on game to filter the larva out
 \*\* For the scoring part, author uses two properties, score and lostHatchlings, one to signify you gained score when pushing a larva to safety, and the other when an enemy eats a larva(which i find rather convoluted, why not just ++score and --score? but we will follow it for now)
-So after calling removeGameObjects to filter larva being 'eaten', decrement game's lostHatchlings(not yet made) by 1
+So after calling removeGameObjects to filter larva being 'eaten', increment game's lostHatchlings(not yet made) by 1
 Back in move to safety section, after calling removeGameObjects to filter larva moving to safety in the forest, increment game's score(not yet made) by 1
 In Game, set score and lostHatchlings properties to 0
 Inside the game's render method, add a section in game called draw status text, and inside it we will use fillText method on context, drawing Score text at coordinate 25, 50
@@ -499,3 +499,15 @@ Firefly particle effect will appear when larva successfully escapes into the for
 For color reference, you can pass in whatever color you like and you should see a 'bubble' floating upwards whenever a larva escapes/moves into forest
 To create a 'burst' of bubbles, you can create a for loop(with a limitation of your choice) and place that push method inside it
 You can change global strokeStyle to black which will affect the collision circles as well as the bubble particle effect(global scopes are more performance friendly)
+To give the bubbles some motion, we can apply Math.cos on the angle in collisionX calculation inside Firefly update to change it from a straight line to a wavy motion(due to how Math.cos works, google is your best friend here)
+Inside Spark update, it will have its own unique set of particle effects and motion
+Increment its angle to half of velocityAngle
+Decrement its collisionX by Math.cos of its angle, multiplied by speedX
+Decrement collisionY by Math.sin of its angle, multiplied by speedY
+Spark particles will occur when enemies clashes with larva, so inside collision with enemies section, after you increment lostHatchlings value, create a for loop for a push method on game's particles array for Spark just like you did for Firefly in the score section
+If you let the game run for abit, you will notice that the particles just does not disappear, because we have not set the logic for it(Firefly particles disappear from the top of the canvas because of the decrementing collisionY, while Spark particles will remain since it's more of a circular motion)
+Add a condition in Spark update, where if radius is more than 0.1, decrement it by 0.05(if you reduce more than your condition, you will get an error because radius cannot be reduced to a negative value)
+Then, add another condition where is radius is less than 0.2, set markedForDeletion to true, and call removeGameObjects on game(The first condition reduces the size of the bubbles, while the second condition removes the bubbles when radius of bubbles is lesser than the stipulated value)
+You can mess around with Math.cos, Math.sin on collisionX and Y to better understand how they work
+In the hatching section, you can add an OR operator with the condition of collisionY less than game's topMargin
+The above will allow player to push eggs into the forest and gain points immediately(if that is what you want). \*\* Eggs spawned close to the forest will automatically give you points too i assume, and since monsters can push eggs, monsters can technically push eggs to earn you points xD
