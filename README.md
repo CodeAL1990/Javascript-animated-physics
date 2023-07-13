@@ -511,3 +511,18 @@ Then, add another condition where is radius is less than 0.2, set markedForDelet
 You can mess around with Math.cos, Math.sin on collisionX and Y to better understand how they work
 In the hatching section, you can add an OR operator with the condition of collisionY less than game's topMargin
 The above will allow player to push eggs into the forest and gain points immediately(if that is what you want). \*\* Eggs spawned close to the forest will automatically give you points too i assume, and since monsters can push eggs, monsters can technically push eggs to earn you points xD
+Just like obstacles, we will now randomise enemies skin types
+The image file with a singular sprite will not work here, so bring in the image file with multiple sprites representing enemies(the usual html, css display none, link it in Enemy image property)
+You will need to tweak spriteWidth and spriteHeight if you are using your own custom spritesheets, but they are unchanged for the author's version
+Add frameX and Y properties and set them to 0
+You will need all 9 parameters for drawImage method to use all the sprites in the spritesheet instead of a singular static sprite
+Always start from the first frame and work your way horizontally and/or vertically depending on the spritesheet you are using
+First frame is always at 0,0 coordinate (sx,sy)
+sw,sh represents the width and height of the image you want to crop each time, so in this case, spriteWidth and spriteHeight
+dw,dh will be the width and height(for now its the same as spriteWidth and spriteHeight since there are no scaling calculations in width and height)
+Let's look at the sx,sy
+sx will multiply frameX by the spriteWidth to move horizontally on the spritesheet(but since there are no horizontal sprites for now, it will remain on the first frame. Horizontal sprites usually represents animation)
+sy will be frameY multiply by spriteHeight to move vertically
+frameX and frameY are properties that will help us navigate through the spritesheet
+Currently, we want the enemies to use any of the 4 sprites we have on the spritesheet randomly(just like obstacles), so instead of 0 in frameY, you can assign a randomised number between 0 and 4 that only includes integers(because we do not want decimal places)
+Inside Enemy update, in the condition where enemy moves offscreen to the left, you want to randomise the subsequent enemies that are newly generated from the right as well, so add the new frameY assignment in the condition as well
