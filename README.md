@@ -526,3 +526,43 @@ sy will be frameY multiply by spriteHeight to move vertically
 frameX and frameY are properties that will help us navigate through the spritesheet
 Currently, we want the enemies to use any of the 4 sprites we have on the spritesheet randomly(just like obstacles), so instead of 0 in frameY, you can assign a randomised number between 0 and 4 that only includes integers(because we do not want decimal places)
 Inside Enemy update, in the condition where enemy moves offscreen to the left, you want to randomise the subsequent enemies that are newly generated from the right as well, so add the new frameY assignment in the condition as well
+We will now add a win-lose message after a certain amount of score has been accumulated, and when the number of lostHatchlings is below the intended threshold
+Add a winningScore property and give it a value
+Inside render method, right below draw status text section, add a win/lose message section, and set a condition where if score is greater than or equal to winningScore, we will invoke a set of code within a save and restore method that applies only to this win/lose message
+Inside that save and restore method, set fillStyle on context to be black with an opacity of 0.5
+Use fillRect on context from 0,0 coordinates to the full width and height(this.width and height)
+The above will fill the canvas with a semi-transparent layer whenever your score reaches winningScore
+After the fillRect for the layer, you will use fillStyle again on context to set it to white and textAlign to center for your win/lose message
+Set message1 and message2 variables assigned to nothing(or however many message variables you want)
+Then, set a condition where if lostHatchlings is less than 5(or whatever value), you will get a winning message, else, a losing message(so the two conditions being score greater than winningScore, and lostHatchlings below a certain threshold)
+Set font on context with whatever px and font type you want
+Use fillText(message, x, y) on your messages to place whatever messages you have written on the canvas at xy coordinate(if you have 2 or more messages, you will need to have a 2nd or more fillText for your subsequent messages since 1 fillText method only applies to 1 message)
+We will have 1 ending message that shows score and a button to press to restart the game(the restart function is not yet made)
+You can adjust the vertical position of the message by tweaking the y parameter values in fillText
+You can see the score increasing even though you though the winning screen has been shown, so you will need a trigger to stop all activities once winning screen is shown
+Inside Game, set gameOver property to false, and inside win-lose condition, set gameOver property to true
+To stop animation completely when gameOver is true, you can wrap your requestAnimationFrame inside animate with a condition where only when gameOver is false, run requestAnimationFrame
+The above will stop the game immediately once winningScore is reached
+To allow player to continue to interact with the game while not increasing score, you can introduce the condition in your move to safety section, where if gameOver is false, increment game's score(so when gameOver is true in your win lose condition, score will stop increasing)
+To prevent enemies from spawning after win-lose screen appears, you will add an AND operator in your existing condition in Enemy update where enemies respawn on the right after they move offscreen to the left, and add an additional condition where gameOver is false(so when win-lose condition is met, existing enemies will continue to move to the left till they disappear, but new enemies will not spawn from the right)
+To stop eggs from spawning when win-lose condition is met, go to your add eggs periodically section, and add the gameOver requirement in your condition
+Add the gameOver condition in your lostHatchlings increment to prevent lostHatchlings value from potentially increasing when win-lose condition is met
+You can link whatever google font you like before your custom css link in html to use them
+You can create shadows on your win-lose text by setting shadowOffsetX, Y to a non zero value(remember negative and positive values will push them in different directions), and shadowColor to a contrasting color
+You can set shadowBlur as well(default is 0)
+Now for that 'r' restart function
+In Player class, create custom restart method
+Inside that restart method, player will move back to its initial position(collisionX, Y properties), so copy and paste those in Player properties to restart method
+The collision circles will need to move back with Player sprites as well, so in your sprite animation for spriteX and Y calculations, copy those codes and paste it in restart method as well
+Inside event listeners section for keydown, add an else condition when 'r' key is pressed, call restart method
+Inside Game, add restart method to it, and call player's restart method inside Game's restart method
+Test it out in your browser by pressing r after playing for abit, player should move back to its starting position
+Once the above is working, we will look through elements that we want to reset as well
+You know you want the canvas to reset to its original state without the previous obstacles, eggs, enemies, hatchlings, and particles
+So set those back to empty arrays
+Your mouse position will also need to be resetted, so set it back to its Game's mouse property initial values
+Do the same for score, lostHatchlings, and gameOver condition
+Notice that only your eggs are spawning and the rest aren't appearing because the others requires init method to be called first for their code to run
+As such, call init after setting the empty arrays
+Now, pressing r should set the canvas back as intended
+You can spread game's eggs array inside collisionObjects for Larva, so that Larva will detect eggs as solid objects, just like obstacles, making the game harder/more dynamic

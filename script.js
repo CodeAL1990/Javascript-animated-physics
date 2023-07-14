@@ -7,7 +7,7 @@ window.addEventListener("load", function () {
   ctx.fillStyle = "white";
   ctx.lineWidth = 3;
   ctx.strokeStyle = "black";
-  ctx.font = "40px Helvetica";
+  ctx.font = "40px Bangers";
   ctx.textAlign = "center";
 
   class Player {
@@ -30,6 +30,13 @@ window.addEventListener("load", function () {
       this.frameX = 0;
       this.frameY = 0;
       this.image = bull;
+    }
+
+    restart() {
+      this.collisionX = this.game.width * 0.5;
+      this.collisionY = this.game.height * 0.5;
+      this.spriteX = this.collisionX - this.width * 0.5 - 5;
+      this.spriteY = this.collisionY - this.height * 0.5 - 80;
     }
 
     draw(context) {
@@ -314,7 +321,7 @@ window.addEventListener("load", function () {
       if (this.collisionY < this.game.topMargin) {
         this.markedForDeletion = true;
         this.game.removeGameObjects();
-        this.game.score++;
+        if (this.game.gameOver === false) this.game.score++;
         for (let i = 0; i < 3; i++) {
           this.game.particles.push(
             new Firefly(this.game, this.collisionX, this.collisionY, "orange")
@@ -323,7 +330,11 @@ window.addEventListener("load", function () {
       }
 
       // collision with objects
-      let collisionObjects = [this.game.player, ...this.game.obstacles];
+      let collisionObjects = [
+        this.game.player,
+        ...this.game.obstacles,
+        ...this.game.eggs,
+      ];
       collisionObjects.forEach((object) => {
         let [collision, distance, sumOfRadii, distanceX, distanceY] =
           this.game.checkCollision(this, object);
@@ -340,7 +351,7 @@ window.addEventListener("load", function () {
         if (this.game.checkCollision(this, enemy)[0]) {
           this.markedForDeletion = true;
           this.game.removeGameObjects();
-          this.game.lostHatchlings++;
+          if (this.game.gameOver === false) this.game.lostHatchlings++;
           for (let i = 0; i < 5; i++) {
             this.game.particles.push(
               new Spark(this.game, this.collisionX, this.collisionY, "green")
@@ -408,7 +419,8 @@ window.addEventListener("load", function () {
       this.spriteX = this.collisionX - this.width * 0.5;
       this.spriteY = this.collisionY - this.height * 0.5 - 70;
       this.collisionX -= this.speedX;
-      if (this.spriteX + this.width < 0) {
+      // enemies respawn on the right after offscreen to the left
+      if (this.spriteX + this.width < 0 && this.game.gameOver === false) {
         this.collisionX =
           this.game.width + this.width + Math.random() * this.game.width * 0.5;
         this.collisionY =
@@ -508,7 +520,9 @@ window.addEventListener("load", function () {
       this.enemies = [];
       this.particles = [];
       this.score = 0;
+      this.winningScore = 10;
       this.lostHatchlings = 0;
+      this.gameOver = false;
       this.player = new Player(this);
       this.mouse = {
         x: this.width * 0.5,
@@ -539,6 +553,7 @@ window.addEventListener("load", function () {
 
       window.addEventListener("keydown", (e) => {
         if (e.key === "d") this.debug = !this.debug;
+        else if (e.key === "r") this.restart();
       });
     }
     render(context, deltaTime) {
@@ -566,7 +581,11 @@ window.addEventListener("load", function () {
       this.timer += deltaTime;
 
       // add eggs periodically
-      if (this.eggTimer > this.eggInterval && this.eggs.length < this.maxEggs) {
+      if (
+        this.eggTimer > this.eggInterval &&
+        this.eggs.length < this.maxEggs &&
+        this.gameOver === false
+      ) {
         this.addEgg();
         this.eggTimer = 0;
         //console.log(this.eggs);
@@ -581,6 +600,38 @@ window.addEventListener("load", function () {
         context.fillText(`Lost: ${this.lostHatchlings}`, 25, 100);
       }
       context.restore();
+
+      // win-lose message
+      if (this.score >= this.winningScore) {
+        this.gameOver = true;
+        context.save();
+        context.fillStyle = "rgba(0, 0, 0, 0.5)";
+        context.fillRect(0, 0, this.width, this.height);
+        context.fillStyle = "white";
+        context.textAlign = "center";
+        context.shadowOffsetX = 3;
+        context.shadowOffsetY = 3;
+        context.shadowColor = "green";
+        let message1;
+        let message2;
+        if (this.lostHatchlings <= 5) {
+          message1 = "The forest is satisfied!";
+          message2 = "Good job!";
+        } else {
+          message1 = "Better luck next time!";
+          message2 = `You lost ${this.lostHatchlings} hatchlings!`;
+        }
+        context.font = "100px Bangers";
+        context.fillText(message1, this.width * 0.5, this.height * 0.5 - 20);
+        context.font = "40px Bangers";
+        context.fillText(message2, this.width * 0.5, this.height * 0.5 + 30);
+        context.fillText(
+          `Final Score is ${this.score}, Press 'r' to try again!`,
+          this.width * 0.5,
+          this.height * 0.5 + 80
+        );
+        context.restore();
+      }
     }
 
     checkCollision(a, b) {
@@ -614,6 +665,24 @@ window.addEventListener("load", function () {
         (particle) => !particle.markedForDeletion
       );
       //console.log(this.gameObjects);
+    }
+
+    restart() {
+      this.player.restart();
+      this.obstacles = [];
+      this.eggs = [];
+      this.hatchlings = [];
+      this.enemies = [];
+      this.particles = [];
+      this.mouse = {
+        x: this.width * 0.5,
+        y: this.height * 0.5,
+        pressed: false,
+      };
+      this.score = 0;
+      this.lostHatchlings = 0;
+      this.gameOver = false;
+      this.init();
     }
 
     init() {
